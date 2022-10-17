@@ -44,7 +44,6 @@ public class HelloWorldTest {
     public void longRedirectLink(){
         Map<String, String> headers = new HashMap<>();
         headers.put("firstHeader1", "firstValue");
-
         Response response = RestAssured
                 .given()
                 .redirects()
@@ -52,10 +51,21 @@ public class HelloWorldTest {
                 .when()
                 .get("https://playground.learnqa.ru/api/long_redirect")
                 .andReturn();
-        response.print();
 
         String locationHeader = response.getHeader("Location");
         System.out.println(locationHeader);
+
+        while (locationHeader != null){
+            Response redirectResponse = RestAssured
+                    .given()
+                    .redirects()
+                    .follow(false)
+                    .when()
+                    .get(locationHeader)
+                    .andReturn();
+            locationHeader = redirectResponse.getHeader("Location");
+            System.out.println(locationHeader);
+        }
     }
     //EX8
     @Test
